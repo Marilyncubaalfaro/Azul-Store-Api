@@ -1,7 +1,8 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import type { Request } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { OrdersService } from './orders.service';
+import { CheckoutDto } from './dto/checkout.dto';
 
 @Controller('orders')
 export class OrdersController {
@@ -12,5 +13,12 @@ export class OrdersController {
   getMyOrders(@Req() request: Request) {
     const authUser = request.user as { sub: string };
     return this.ordersService.findByUserId(authUser.sub);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('checkout')
+  checkout(@Req() request: Request, @Body() checkoutDto: CheckoutDto) {
+    const authUser = request.user as { sub: string };
+    return this.ordersService.checkout(authUser.sub, checkoutDto);
   }
 }

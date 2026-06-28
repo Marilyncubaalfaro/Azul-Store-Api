@@ -5,11 +5,17 @@ export type OrderDocument = HydratedDocument<Order>;
 
 @Schema({ _id: false })
 export class OrderItem {
+  @Prop({ required: true, min: 1 })
+  productId: number;
+
   @Prop({ required: true, trim: true })
   productName: string;
 
   @Prop({ required: true, min: 1 })
   quantity: number;
+
+  @Prop({ required: true, min: 0 })
+  unitPrice: number;
 
   @Prop({ default: '' })
   size: string;
