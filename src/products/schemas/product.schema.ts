@@ -38,6 +38,9 @@ export class Product {
   @Prop({ required: true })
   image: string;
 
+  @Prop({ type: [String], default: [] })
+  images?: string[];
+
   @Prop({ required: true, lowercase: true, trim: true })
   category: string;
 

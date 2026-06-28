@@ -55,15 +55,24 @@ export class ProductsService implements OnModuleInit {
         }),
       );
 
+      const normalizedImages = this.normalizeProductImages(
+        product.images,
+        product.image,
+      );
+
       const totalStock = this.calculateTotalStock(normalizedStockBySize);
       const changedBySize =
         JSON.stringify(normalizedStockBySize) !==
         JSON.stringify(product.stockBySize);
       const changedTotal = totalStock !== product.stock;
+      const changedImages =
+        JSON.stringify(normalizedImages) !==
+        JSON.stringify(product.images ?? []);
 
-      if (changedBySize || changedTotal) {
+      if (changedBySize || changedTotal || changedImages) {
         product.stockBySize = normalizedStockBySize;
         product.stock = totalStock;
+        product.images = normalizedImages;
         await product.save();
         updatedCount += 1;
       }
@@ -103,6 +112,20 @@ export class ProductsService implements OnModuleInit {
       (acc, entry) => acc + Math.max(0, Number(entry.stock) || 0),
       0,
     );
+  }
+
+  private normalizeProductImages(
+    images: string[] | undefined,
+    coverImage: string,
+  ) {
+    const allImages = [...(Array.isArray(images) ? images : []), coverImage];
+    const uniqueImages = Array.from(
+      new Set(
+        allImages.map((value) => String(value || '').trim()).filter(Boolean),
+      ),
+    );
+
+    return uniqueImages.slice(0, 5);
   }
 
   findAll(params: FindProductsParams = {}) {
