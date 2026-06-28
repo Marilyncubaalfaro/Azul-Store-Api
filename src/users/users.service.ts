@@ -10,6 +10,12 @@ type CreateUserInput = {
   roles?: string[];
 };
 
+type UpdateAddressInput = {
+  line1: string;
+  city: string;
+  country: string;
+};
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -32,5 +38,19 @@ export class UsersService {
       ...input,
       email: input.email.toLowerCase().trim(),
     });
+  }
+
+  updateAddress(userId: string, address: UpdateAddressInput) {
+    return this.userModel.findByIdAndUpdate(
+      userId,
+      {
+        address: {
+          line1: address.line1.trim(),
+          city: address.city.trim(),
+          country: address.country.trim(),
+        },
+      },
+      { new: true },
+    );
   }
 }

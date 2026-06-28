@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Patch,
   Post,
   Req,
   Res,
@@ -11,6 +12,7 @@ import type { Request, Response } from 'express';
 import { Roles } from '../common/decorators/roles.decorator';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { UpdateShippingAddressDto } from './dto/update-shipping-address.dto';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
@@ -51,7 +53,21 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('me')
   me(@Req() request: Request) {
-    return request.user;
+    const authUser = request.user as { sub: string };
+    return this.authService.getMe(authUser.sub);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('me/address')
+  updateAddress(
+    @Req() request: Request,
+    @Body() updateShippingAddressDto: UpdateShippingAddressDto,
+  ) {
+    const authUser = request.user as { sub: string };
+    return this.authService.updateShippingAddress(
+      authUser.sub,
+      updateShippingAddressDto,
+    );
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

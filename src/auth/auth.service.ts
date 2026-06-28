@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  NotFoundException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -15,6 +16,7 @@ import { UsersService } from '../users/users.service';
 import { UserDocument } from '../users/schemas/user.schema';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { UpdateShippingAddressDto } from './dto/update-shipping-address.dto';
 import {
   RefreshToken,
   RefreshTokenDocument,
@@ -101,6 +103,32 @@ export class AuthService {
     return {
       message: 'Sesión cerrada correctamente.',
     };
+  }
+
+  async getMe(userId: string) {
+    const user = await this.usersService.findById(userId);
+
+    if (!user || !user.isActive) {
+      throw new UnauthorizedException('Usuario no autorizado.');
+    }
+
+    return this.serializeUser(user);
+  }
+
+  async updateShippingAddress(
+    userId: string,
+    updateShippingAddressDto: UpdateShippingAddressDto,
+  ) {
+    const user = await this.usersService.updateAddress(
+      userId,
+      updateShippingAddressDto,
+    );
+
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado.');
+    }
+
+    return this.serializeUser(user);
   }
 
   private async validateUser(email: string, password: string) {
