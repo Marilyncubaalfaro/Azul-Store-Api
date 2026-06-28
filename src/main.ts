@@ -7,7 +7,10 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
-  const clientUrl = configService.get<string>('CLIENT_URL');
+  const clientOrigins = (configService.get<string>('CLIENT_URL') ?? '')
+    .split(',')
+    .map((origin) => origin.trim().replace(/\/$/, ''))
+    .filter(Boolean);
 
   app.use(cookieParser());
   app.useGlobalPipes(
@@ -18,7 +21,7 @@ async function bootstrap() {
     }),
   );
   app.enableCors({
-    origin: clientUrl ?? true,
+    origin: clientOrigins.length > 0 ? clientOrigins : true,
     credentials: true,
   });
 
