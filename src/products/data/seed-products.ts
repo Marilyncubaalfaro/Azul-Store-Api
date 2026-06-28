@@ -12,6 +12,13 @@ export const PRODUCT_SEED: ProductSeed[] = [
     badge: 'NEW\n25% OFF',
     image:
       'https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=520&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=520&q=80',
+      'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=520&q=80',
+      'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=520&q=80',
+      'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=520&q=80',
+    ],
+    subcategories: ['conjuntos', 'blusas y camisas', 'pantalones'],
     category: 'beachwear',
     isOffer: true,
     stockBySize: [
@@ -31,6 +38,13 @@ export const PRODUCT_SEED: ProductSeed[] = [
     badge: 'NEW\n21% OFF',
     image:
       'https://images.unsplash.com/photo-1581044777550-4cfa60707c03?auto=format&fit=crop&w=520&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1581044777550-4cfa60707c03?auto=format&fit=crop&w=520&q=80',
+      'https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=520&q=80',
+      'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=520&q=80',
+      'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=520&q=80',
+    ],
+    subcategories: ['blusas y camisas'],
     category: 'ropa',
     isOffer: true,
     stockBySize: [
@@ -50,6 +64,13 @@ export const PRODUCT_SEED: ProductSeed[] = [
     badge: 'NEW\n45% OFF',
     image:
       'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=520&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=520&q=80',
+      'https://images.unsplash.com/photo-1464863979621-258859e62245?auto=format&fit=crop&w=520&q=80',
+      'https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=520&q=80',
+      'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=520&q=80',
+    ],
+    subcategories: ['vestidos'],
     category: 'ropa',
     isOffer: true,
     stockBySize: [
@@ -68,6 +89,13 @@ export const PRODUCT_SEED: ProductSeed[] = [
     badge: 'NEW\n21% OFF',
     image:
       'https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=520&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=520&q=80',
+      'https://images.unsplash.com/photo-1462989857672-1112e6f62f5a?auto=format&fit=crop&w=520&q=80',
+      'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=520&q=80',
+      'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=520&q=80',
+    ],
+    subcategories: ['enterizos', 'pantalones'],
     category: 'nightwear',
     isOffer: true,
     stockBySize: [
@@ -86,6 +114,13 @@ export const PRODUCT_SEED: ProductSeed[] = [
     badge: 'NEW\n15% OFF',
     image:
       'https://images.unsplash.com/photo-1542295669297-4d352b042bca?auto=format&fit=crop&w=520&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1542295669297-4d352b042bca?auto=format&fit=crop&w=520&q=80',
+      'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=520&q=80',
+      'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=520&q=80',
+      'https://images.unsplash.com/photo-1464863979621-258859e62245?auto=format&fit=crop&w=520&q=80',
+    ],
+    subcategories: ['vestidos'],
     category: 'beachwear',
     isOffer: true,
     stockBySize: [

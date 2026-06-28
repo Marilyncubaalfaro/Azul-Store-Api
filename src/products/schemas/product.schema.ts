@@ -41,6 +41,9 @@ export class Product {
   @Prop({ type: [String], default: [] })
   images?: string[];
 
+  @Prop({ type: [String], default: [] })
+  subcategories?: string[];
+
   @Prop({ required: true, lowercase: true, trim: true })
   category: string;
 

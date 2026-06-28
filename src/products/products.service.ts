@@ -18,6 +18,7 @@ type FindProductsParams = {
 export class ProductsService implements OnModuleInit {
   private readonly logger = new Logger(ProductsService.name);
   private readonly defaultSizes = ['S', 'M', 'L'];
+  private readonly maxImages = 5;
 
   constructor(
     @InjectModel(Product.name)
@@ -59,6 +60,10 @@ export class ProductsService implements OnModuleInit {
         product.images,
         product.image,
       );
+      const normalizedSubcategories = this.normalizeSubcategories(
+        product.subcategories,
+        product,
+      );
 
       const totalStock = this.calculateTotalStock(normalizedStockBySize);
       const changedBySize =
@@ -68,11 +73,20 @@ export class ProductsService implements OnModuleInit {
       const changedImages =
         JSON.stringify(normalizedImages) !==
         JSON.stringify(product.images ?? []);
+      const changedSubcategories =
+        JSON.stringify(normalizedSubcategories) !==
+        JSON.stringify(product.subcategories ?? []);
 
-      if (changedBySize || changedTotal || changedImages) {
+      if (
+        changedBySize ||
+        changedTotal ||
+        changedImages ||
+        changedSubcategories
+      ) {
         product.stockBySize = normalizedStockBySize;
         product.stock = totalStock;
         product.images = normalizedImages;
+        product.subcategories = normalizedSubcategories;
         await product.save();
         updatedCount += 1;
       }
@@ -118,14 +132,110 @@ export class ProductsService implements OnModuleInit {
     images: string[] | undefined,
     coverImage: string,
   ) {
-    const allImages = [...(Array.isArray(images) ? images : []), coverImage];
+    const allImages = [coverImage, ...(Array.isArray(images) ? images : [])];
     const uniqueImages = Array.from(
       new Set(
         allImages.map((value) => String(value || '').trim()).filter(Boolean),
       ),
     );
 
-    return uniqueImages.slice(0, 5);
+    return uniqueImages.slice(0, this.maxImages);
+  }
+
+  private normalizeSubcategories(
+    subcategories: string[] | undefined,
+    product: Pick<Product, 'name' | 'brand' | 'category'>,
+  ) {
+    const sourceValues = Array.isArray(subcategories) ? subcategories : [];
+
+    const inferredValues = [
+      this.inferSubcategoryFromName(product.name),
+      this.inferSubcategoryFromCategory(product.category),
+    ];
+
+    const uniqueValues = Array.from(
+      new Set(
+        [...sourceValues, ...inferredValues]
+          .map((value) =>
+            String(value || '')
+              .trim()
+              .toLowerCase(),
+          )
+          .filter(Boolean),
+      ),
+    );
+
+    return uniqueValues.slice(0, 4);
+  }
+
+  private inferSubcategoryFromName(name: string) {
+    const normalizedName = name.toLowerCase();
+
+    if (normalizedName.includes('vestido')) {
+      return 'vestidos';
+    }
+
+    if (
+      normalizedName.includes('camisa') ||
+      normalizedName.includes('blusa') ||
+      normalizedName.includes('top')
+    ) {
+      return 'blusas y camisas';
+    }
+
+    if (
+      normalizedName.includes('casaca') ||
+      normalizedName.includes('abrigo') ||
+      normalizedName.includes('coat') ||
+      normalizedName.includes('jacket')
+    ) {
+      return 'casacas y abrigos';
+    }
+
+    if (
+      normalizedName.includes('chompa') ||
+      normalizedName.includes('chaleco') ||
+      normalizedName.includes('sweater') ||
+      normalizedName.includes('knit')
+    ) {
+      return 'chompas y chalecos';
+    }
+
+    if (
+      normalizedName.includes('pantalon') ||
+      normalizedName.includes('pant') ||
+      normalizedName.includes('trouser')
+    ) {
+      return 'pantalones';
+    }
+
+    if (
+      normalizedName.includes('enterizo') ||
+      normalizedName.includes('jumpsuit') ||
+      normalizedName.includes('mono')
+    ) {
+      return 'enterizos';
+    }
+
+    return '';
+  }
+
+  private inferSubcategoryFromCategory(category: string) {
+    const normalizedCategory = category.toLowerCase();
+
+    if (normalizedCategory === 'ropa') {
+      return 'blusas y camisas';
+    }
+
+    if (normalizedCategory === 'nightwear') {
+      return 'enterizos';
+    }
+
+    if (normalizedCategory === 'beachwear') {
+      return 'vestidos';
+    }
+
+    return '';
   }
 
   findAll(params: FindProductsParams = {}) {
