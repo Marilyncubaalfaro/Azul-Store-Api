@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Injectable,
   Logger,
   NotFoundException,
@@ -7,6 +8,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { PRODUCT_SEED } from './data/seed-products';
+import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
 import { Product, ProductDocument } from './schemas/product.schema';
 
 type FindProductsParams = {
@@ -142,6 +144,32 @@ export class ProductsService implements OnModuleInit {
     return uniqueImages.slice(0, this.maxImages);
   }
 
+  private normalizeStockBySize(
+    stockBySize: Array<{ size: string; stock: number }> | undefined,
+  ) {
+    const normalizedEntries = new Map<
+      string,
+      { size: string; stock: number }
+    >();
+
+    for (const entry of Array.isArray(stockBySize) ? stockBySize : []) {
+      const size = String(entry.size || '')
+        .toUpperCase()
+        .trim();
+
+      if (!size) {
+        continue;
+      }
+
+      normalizedEntries.set(size, {
+        size,
+        stock: Math.max(0, Number(entry.stock) || 0),
+      });
+    }
+
+    return Array.from(normalizedEntries.values());
+  }
+
   private normalizeSubcategories(
     subcategories: string[] | undefined,
     product: Pick<Product, 'name' | 'brand' | 'category'>,
@@ -258,6 +286,105 @@ export class ProductsService implements OnModuleInit {
 
   findByCategory(category: string) {
     return this.findAll({ category });
+  }
+
+  async createProduct(createProductDto: CreateProductDto) {
+    const existingProduct = await this.productModel.findOne({
+      id: createProductDto.id,
+    });
+
+    if (existingProduct) {
+      throw new ConflictException(
+        'Ya existe un producto con ese identificador.',
+      );
+    }
+
+    const normalizedStockBySize = this.normalizeStockBySize(
+      createProductDto.stockBySize,
+    );
+
+    const normalizedProduct = {
+      ...createProductDto,
+      category: createProductDto.category.toLowerCase().trim(),
+      badge: createProductDto.badge?.trim() ?? '',
+      image: createProductDto.image.trim(),
+      images: this.normalizeProductImages(
+        createProductDto.images,
+        createProductDto.image,
+      ),
+      subcategories: this.normalizeSubcategories(
+        createProductDto.subcategories,
+        {
+          name: createProductDto.name,
+          brand: createProductDto.brand,
+          category: createProductDto.category,
+        },
+      ),
+      stockBySize: normalizedStockBySize,
+      stock: this.calculateTotalStock(normalizedStockBySize),
+      isOffer: Boolean(createProductDto.isOffer),
+      originalPrice:
+        createProductDto.originalPrice !== undefined
+          ? Math.max(0, Number(createProductDto.originalPrice) || 0)
+          : null,
+    };
+
+    return this.productModel.create(normalizedProduct);
+  }
+
+  async updateProduct(id: number, updateProductDto: UpdateProductDto) {
+    const product = await this.productModel.findOne({ id });
+
+    if (!product) {
+      throw new NotFoundException('Producto no encontrado.');
+    }
+
+    const mergedStockBySize = this.normalizeStockBySize(
+      updateProductDto.stockBySize ?? product.stockBySize,
+    );
+
+    const nextBrand = updateProductDto.brand ?? product.brand;
+    const nextName = updateProductDto.name ?? product.name;
+    const nextCategory = updateProductDto.category ?? product.category;
+    const nextImage = updateProductDto.image ?? product.image;
+
+    product.brand = nextBrand.trim();
+    product.name = nextName.trim();
+    product.price =
+      updateProductDto.price !== undefined
+        ? Math.max(0, Number(updateProductDto.price) || 0)
+        : product.price;
+    product.originalPrice =
+      updateProductDto.originalPrice !== undefined
+        ? updateProductDto.originalPrice === null
+          ? null
+          : Math.max(0, Number(updateProductDto.originalPrice) || 0)
+        : product.originalPrice;
+    product.badge =
+      updateProductDto.badge !== undefined
+        ? updateProductDto.badge.trim()
+        : product.badge;
+    product.image = nextImage.trim();
+    product.images = this.normalizeProductImages(
+      updateProductDto.images ?? product.images,
+      nextImage,
+    );
+    product.subcategories = this.normalizeSubcategories(
+      updateProductDto.subcategories ?? product.subcategories,
+      {
+        name: nextName,
+        brand: nextBrand,
+        category: nextCategory,
+      },
+    );
+    product.category = nextCategory.toLowerCase().trim();
+    product.isOffer = updateProductDto.isOffer ?? product.isOffer;
+    product.stockBySize = mergedStockBySize;
+    product.stock = this.calculateTotalStock(mergedStockBySize);
+
+    await product.save();
+
+    return product;
   }
 
   async findById(id: number) {

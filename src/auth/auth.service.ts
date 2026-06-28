@@ -15,6 +15,7 @@ import type { Response } from 'express';
 import { UsersService } from '../users/users.service';
 import { UserDocument } from '../users/schemas/user.schema';
 import { LoginDto } from './dto/login.dto';
+import { AdminRegisterDto } from './dto/admin-register.dto';
 import { RegisterDto } from './dto/register.dto';
 import { UpdateShippingAddressDto } from './dto/update-shipping-address.dto';
 import {
@@ -42,6 +43,32 @@ export class AuthService {
     const password = await bcrypt.hash(registerDto.password, 12);
     const user = await this.usersService.createUser({
       ...registerDto,
+      roles: ['user'],
+      password,
+    });
+
+    return {
+      user: this.serializeUser(user),
+    };
+  }
+
+  async adminRegister(adminRegisterDto: AdminRegisterDto) {
+    const existingUser = await this.usersService.findByEmail(
+      adminRegisterDto.email,
+    );
+
+    if (existingUser) {
+      throw new ConflictException('Ya existe un usuario con ese email.');
+    }
+
+    const password = await bcrypt.hash(adminRegisterDto.password, 12);
+    const user = await this.usersService.createUser({
+      ...adminRegisterDto,
+      roles:
+        Array.isArray(adminRegisterDto.roles) &&
+        adminRegisterDto.roles.length > 0
+          ? adminRegisterDto.roles
+          : ['user'],
       password,
     });
 

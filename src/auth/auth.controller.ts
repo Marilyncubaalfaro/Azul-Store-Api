@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { Roles } from '../common/decorators/roles.decorator';
+import { AdminRegisterDto } from './dto/admin-register.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { UpdateShippingAddressDto } from './dto/update-shipping-address.dto';
@@ -24,6 +25,13 @@ export class AuthController {
   @Post('register')
   register(@Body() registerDto: RegisterDto) {
     return this.authService.register(registerDto);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @Post('admin/register')
+  adminRegister(@Body() adminRegisterDto: AdminRegisterDto) {
+    return this.authService.adminRegister(adminRegisterDto);
   }
 
   @Post('login')

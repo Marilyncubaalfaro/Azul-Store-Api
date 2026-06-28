@@ -38,7 +38,14 @@ export class Product {
   @Prop({ required: true })
   image: string;
 
-  @Prop({ type: [String], default: [] })
+  @Prop({
+    type: [String],
+    default: [],
+    validate: [
+      (value: string[]) => Array.isArray(value) && value.length <= 5,
+      'Solo se permiten hasta 5 imágenes por producto.',
+    ],
+  })
   images?: string[];
 
   @Prop({ type: [String], default: [] })
