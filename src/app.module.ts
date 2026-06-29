@@ -4,7 +4,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
-import { MediaModule } from './media/media.module';
 import { OrdersModule } from './orders/orders.module';
 import { ProductsModule } from './products/products.module';
 import { UsersModule } from './users/users.module';
@@ -23,7 +22,6 @@ import { UsersModule } from './users/users.module';
     }),
     UsersModule,
     AuthModule,
-    MediaModule,
     OrdersModule,
     ProductsModule,
   ],
