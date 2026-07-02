@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { NewsletterController } from './newsletter.controller';
 import { NewsletterService } from './newsletter.service';
@@ -9,6 +10,7 @@ import {
 
 @Module({
   imports: [
+    ConfigModule,
     MongooseModule.forFeature([
       { name: NewsletterSubscriber.name, schema: NewsletterSubscriberSchema },
     ]),
