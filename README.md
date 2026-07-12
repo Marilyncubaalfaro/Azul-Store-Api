@@ -25,6 +25,8 @@ JWT_ACCESS_SECRET=replace_with_a_long_random_secret
 JWT_ACCESS_EXPIRES_IN=15m
 REFRESH_TOKEN_DAYS=7
 CLIENT_URL=http://localhost:5173
+MERCADOPAGO_ACCESS_TOKEN=your_mercadopago_access_token
+MERCADOPAGO_WEBHOOK_URL=https://your-public-api-domain/orders/mercadopago/webhook
 
 ## Instalación
 
@@ -70,6 +72,9 @@ Orders:
 
 - POST /orders/checkout
 - GET /orders/me
+- POST /orders/mercadopago/preference
+- GET /orders/mercadopago/status/:externalReference
+- POST /orders/mercadopago/webhook
 
 ## Notas de dominio
 
