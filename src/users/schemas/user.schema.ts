@@ -35,6 +35,9 @@ export class User {
   @Prop({ required: true, trim: true })
   name: string;
 
+  @Prop({ trim: true, default: '' })
+  phone: string;
+
   @Prop({ type: [String], default: ['user'] })
   roles: string[];
 
