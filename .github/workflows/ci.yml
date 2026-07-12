@@ -33,3 +33,17 @@ jobs:
 
       - name: Build project
         run: npm run build
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: validate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    environment: production
+
+    steps:
+      - name: Trigger Railway deploy hook
+        env:
+          RAILWAY_DEPLOY_HOOK_URL: ${{ secrets.RAILWAY_DEPLOY_HOOK_URL }}
+        run: |
+          test -n "$RAILWAY_DEPLOY_HOOK_URL" || (echo "Missing secret: RAILWAY_DEPLOY_HOOK_URL" && exit 1)
+          curl -fsS -X POST "$RAILWAY_DEPLOY_HOOK_URL"

@@ -69,7 +69,8 @@ export class NewsletterService {
     const smtpUser = this.getRequiredConfig('SMTP_USER');
     const smtpPass = this.getRequiredConfig('SMTP_PASS');
     const fromEmail = this.getRequiredConfig('SMTP_FROM_EMAIL');
-    const fromName = this.configService.get<string>('SMTP_FROM_NAME')?.trim() || 'Azul Store';
+    const fromName =
+      this.configService.get<string>('SMTP_FROM_NAME')?.trim() || 'Azul Store';
     const secure = this.configService.get<string>('SMTP_SECURE') === 'true';
 
     const transporter = nodemailer.createTransport({
