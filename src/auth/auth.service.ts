@@ -17,6 +17,7 @@ import { UserDocument } from '../users/schemas/user.schema';
 import { LoginDto } from './dto/login.dto';
 import { AdminRegisterDto } from './dto/admin-register.dto';
 import { RegisterDto } from './dto/register.dto';
+import { UpdatePhoneDto } from './dto/update-phone.dto';
 import { UpdateShippingAddressDto } from './dto/update-shipping-address.dto';
 import {
   RefreshToken,
@@ -149,6 +150,19 @@ export class AuthService {
     const user = await this.usersService.updateAddress(
       userId,
       updateShippingAddressDto,
+    );
+
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado.');
+    }
+
+    return this.serializeUser(user);
+  }
+
+  async updatePhone(userId: string, updatePhoneDto: UpdatePhoneDto) {
+    const user = await this.usersService.updatePhone(
+      userId,
+      updatePhoneDto.phone,
     );
 
     if (!user) {

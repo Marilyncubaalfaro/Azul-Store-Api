@@ -7,6 +7,7 @@ type CreateUserInput = {
   email: string;
   password: string;
   name: string;
+  phone?: string;
   roles?: string[];
 };
 
@@ -34,9 +35,13 @@ export class UsersService {
   }
 
   createUser(input: CreateUserInput) {
+    const normalizedPhone =
+      typeof input.phone === 'string' ? input.phone.trim() : '';
+
     return this.userModel.create({
       ...input,
       email: input.email.toLowerCase().trim(),
+      phone: normalizedPhone,
     });
   }
 
@@ -49,6 +54,16 @@ export class UsersService {
           city: address.city.trim(),
           country: address.country.trim(),
         },
+      },
+      { new: true },
+    );
+  }
+
+  updatePhone(userId: string, phone: string) {
+    return this.userModel.findByIdAndUpdate(
+      userId,
+      {
+        phone: phone.trim(),
       },
       { new: true },
     );

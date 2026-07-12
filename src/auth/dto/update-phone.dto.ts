@@ -1,20 +1,8 @@
 import { Transform } from 'class-transformer';
-import { IsEmail, IsString, Matches, MinLength } from 'class-validator';
+import { Matches } from 'class-validator';
 
-export class RegisterDto {
-  @IsEmail()
-  email: string;
-
-  @IsString()
-  @MinLength(8)
-  password: string;
-
-  @IsString()
-  @MinLength(2)
-  name: string;
-
+export class UpdatePhoneDto {
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
-  @IsString()
   @Matches(/^9\d{8}$/, {
     message:
       'El celular debe tener exactamente 9 digitos y empezar con 9 (ejemplo: 912345678).',

@@ -13,6 +13,7 @@ import { Roles } from '../common/decorators/roles.decorator';
 import { AdminRegisterDto } from './dto/admin-register.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { UpdatePhoneDto } from './dto/update-phone.dto';
 import { UpdateShippingAddressDto } from './dto/update-shipping-address.dto';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -76,6 +77,13 @@ export class AuthController {
       authUser.sub,
       updateShippingAddressDto,
     );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('me/phone')
+  updatePhone(@Req() request: Request, @Body() updatePhoneDto: UpdatePhoneDto) {
+    const authUser = request.user as { sub: string };
+    return this.authService.updatePhone(authUser.sub, updatePhoneDto);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
